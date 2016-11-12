@@ -1,5 +1,6 @@
 package com.joshcummings.codeplay.terracotta.servlet;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -22,9 +23,17 @@ public class CheckLookupServlet extends ApplicationAwareServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String checkNumber = request.getParameter("checkLookupNumber");
-		response.setContentType("image/jpg");
-		context.get(CheckService.class).findCheckImage(checkNumber, response.getOutputStream());
-		response.flushBuffer();
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			context.get(CheckService.class).findCheckImage(checkNumber, baos);
+			response.setContentType("image/jpg");
+			response.getOutputStream().write(baos.toByteArray());
+			response.flushBuffer();
+		} catch ( IllegalArgumentException e ) {
+			response.setStatus(400);
+			request.setAttribute("message", checkNumber + " is invalid");
+			request.getRequestDispatcher("/WEB-INF/json/error.jsp").forward(request, response);
+		}
 	}
 
 }

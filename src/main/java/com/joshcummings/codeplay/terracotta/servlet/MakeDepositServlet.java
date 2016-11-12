@@ -3,6 +3,10 @@ package com.joshcummings.codeplay.terracotta.servlet;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -36,18 +40,37 @@ public class MakeDepositServlet extends ApplicationAwareServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String accountNumber = request.getParameter("depositAccountNumber");
-		String amount = request.getParameter("depositAmount");
-		String checkNumber = request.getParameter("depositCheckNumber");
-		Part image = request.getPart("depositCheckImage");
-		Account account = context.get(AccountService.class).findByAccountNumber(Integer.parseInt(accountNumber));
-		Check check = new Check(String.valueOf(nextCheckNumber++), Integer.parseInt(checkNumber), new BigDecimal(amount), account.getId());
-		context.get(CheckService.class).updateCheckImage(checkNumber, image.getInputStream());
-		context.get(CheckService.class).addCheck(check);
+		List<String> errors = new ArrayList<>();
 		
-		account = context.get(AccountService.class).makeDeposit(account, check);
-		request.setAttribute("account", account);
-		request.getRequestDispatcher("/WEB-INF/json/account.jsp").forward(request, response);
+		Optional<Integer> accountNumber = tryParse(request.getParameter("depositAccountNumber"), Integer::parseInt, errors);
+		Optional<BigDecimal> amount = tryParse(request.getParameter("depositAmount"), BigDecimal::new, errors);
+
+		if ( errors.isEmpty() ) {
+			String checkNumber = request.getParameter("depositCheckNumber");
+			
+			Part image = request.getPart("depositCheckImage");
+			Account account = context.get(AccountService.class).findByAccountNumber(accountNumber.get());
+			context.get(CheckService.class).updateCheckImage(checkNumber, image.getInputStream());
+			
+			Check check = new Check(String.valueOf(nextCheckNumber++), Integer.parseInt(checkNumber), amount.get(), account.getId());
+			context.get(CheckService.class).addCheck(check);
+			
+			account = context.get(AccountService.class).makeDeposit(account, check);
+			request.setAttribute("account", account);
+			request.getRequestDispatcher("/WEB-INF/json/account.jsp").forward(request, response);
+		} else {
+			response.setStatus(400);
+			request.setAttribute("message", errors.stream().findFirst().get());
+			request.getRequestDispatcher("/WEB-INF/json/error.jsp").forward(request, response);
+		}
 	}
 
+	private <E> Optional<E> tryParse(String possibleInteger, Function<String, E> parser, List<String> errors) {
+		try {
+			return Optional.of(parser.apply(possibleInteger));
+		} catch ( NumberFormatException e ) {
+			errors.add(possibleInteger + " is invalid");
+			return Optional.empty();
+		}
+	}
 }

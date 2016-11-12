@@ -21,13 +21,6 @@ public class DatabaseConfigurer implements ServletContextListener {
 	
 	private static final String DATABASE_URL = "jdbc:hsqldb:mem:db";
 	
-	private static final String DROP_USER_TABLE = "DROP TABLE IF EXISTS user";
-	private static final String DROP_ACCOUNT_TABLE = "DROP TABLE IF EXISTS account";
-	private static final String DROP_CHECK_TABLE = "DROP TABLE IF EXISTS check";
-	private static final String CREATE_USER_TABLE = "CREATE TABLE user (id VARCHAR(64) PRIMARY KEY, name VARCHAR(256), email VARCHAR(256), username VARCHAR(64), password VARCHAR(64))";
-	private static final String CREATE_ACCOUNT_TABLE = "CREATE TABLE account (id VARCHAR(64) PRIMARY KEY, amount NUMERIC(12,4), number INTEGER, owner_id VARCHAR(64))";
-	private static final String CREATE_CHECK_TABLE = "CREATE TABLE check (id VARCHAR(64) PRIMARY KEY, amount NUMERIC(12,4), number INTEGER, account_id VARCHAR(64))";
-	
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
 		// TODO Auto-generated method stub

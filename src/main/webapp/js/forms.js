@@ -20,30 +20,30 @@ $(function() {
 	        return {
 	            // create new XMLHttpRequest
 	            send: function(headers, callback){
-			// setup all variables
+	            	// setup all variables
 	                var xhr = new XMLHttpRequest(),
-			url = options.url,
-			type = options.type,
-			async = options.async || true,
-			// blob or arraybuffer. Default is blob
-			dataType = options.responseType || "blob",
-			data = options.data || null,
-			username = options.username || null,
-			password = options.password || null;
+	                url = options.url,
+	                type = options.type,
+	                async = options.async || true,
+	                // blob or arraybuffer. Default is blob
+	                dataType = options.responseType || "blob",
+	                data = options.data || null,
+	                username = options.username || null,
+	                password = options.password || null;
 						
 	                xhr.addEventListener('load', function(){
-				var data = {};
-				data[options.dataType] = xhr.response;
-				// make callback and send data
-				callback(xhr.status, xhr.statusText, data, xhr.getAllResponseHeaders());
+	                	var data = {};
+	                	data[options.dataType] = xhr.response;
+	                	// make callback and send data
+	                	callback(xhr.status, xhr.statusText, data, xhr.getAllResponseHeaders());
 	                });
-
+	                
 	                xhr.open(type, url, async, username, password);
 					
-			// setup custom headers
-			for (var i in headers ) {
-				xhr.setRequestHeader(i, headers[i] );
-			}
+	                // setup custom headers
+	                for (var i in headers ) {
+	                	xhr.setRequestHeader(i, headers[i] );
+	                }
 					
 	                xhr.responseType = dataType;
 	                xhr.send(data);
@@ -80,6 +80,7 @@ var submitCheckLookup = function(event) {
 			var blob = new Blob([ arrayBufferView ], {type: "image/jpg"});
 			var urlCreator = window.URL || window.webkitURL;
 			var url = urlCreator.createObjectURL(blob);
+			$("#deposit .messages").html("");
 			document.getElementById("checkImageDisplay").src = url;
 			document.getElementById("checkImageDisplay").style = "margin-bottom: 20px";
 		},
@@ -107,6 +108,7 @@ var submitMoneyTransfer = function(event) {
 			$("#transfer .messages").html("Transferred!");
 		},
 		error : function ( jqXhr, status, message ) {
+			var message = JSON.parse(jqXhr.responseText).message;
 			$("#transfer .messages").html(message);
 		}
 	});
@@ -131,6 +133,7 @@ var submitMoneyDeposit = function(event) {
 			$("#deposit .messages").html("Deposited!");
 		},
 		error : function ( jqXhr, status, message ) {
+			var message = JSON.parse(jqXhr.responseText).message;
 			$("#deposit .messages").html(message);
 		}
 	});
@@ -151,6 +154,7 @@ var submitContactUs = function(event) {
 			$("#contact .messages").html("Delivered!");
 		},
 		error : function ( jqXhr, status, message ) {
+			var message = JSON.parse(jqXhr.responseText).message;
 			$("#contact .messages").html(message);
 		}
 	});
@@ -168,6 +172,7 @@ var submitShowAccounts = function(event) {
 			location.hash = "#results";
 		},
 		error : function ( jqXhr, status, message ) {
+			var message = JSON.parse(jqXhr.responseText).message;
 			$("#showAccounts .messages").html(message);
 		}
 	});
@@ -185,6 +190,7 @@ var submitShowMessages = function(event) {
 			location.hash = "#results";
 		},
 		error : function ( jqXhr, status, message ) {
+			var message = JSON.parse(jqXhr.responseText).message;
 			$("#showMessages .messages").html(message);
 		}
 	});

@@ -6,6 +6,7 @@ import javax.servlet.annotation.WebListener;
 
 import com.joshcummings.codeplay.terracotta.service.AccountService;
 import com.joshcummings.codeplay.terracotta.service.CheckService;
+import com.joshcummings.codeplay.terracotta.service.EmailService;
 import com.joshcummings.codeplay.terracotta.service.MessageService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
 
@@ -31,6 +32,7 @@ public class ApplicationContextConfigurer implements ServletContextListener {
     	context.set(new AccountService());
     	context.set(new UserService());
     	context.set(new CheckService());
+    	context.set(new EmailService());
     	context.set(new MessageService());
     	arg0.getServletContext().setAttribute("applicationContext", context);
     }

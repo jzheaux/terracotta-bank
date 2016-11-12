@@ -97,7 +97,7 @@ http://www.tooplate.com/view/2080-minimax
 						  	</div>
 							<div class="col-md-6 col-sm-6"></div>
 							<div class="col-md-6 col-sm-6">
-								<input name="submit" type="submit" class="form-control" value="LOGIN">
+								<input name="login" type="submit" class="form-control" value="LOGIN">
 							</div>
 						</form>
 					</div>
@@ -120,7 +120,7 @@ http://www.tooplate.com/view/2080-minimax
 						  	</div>
 						  	<div class="col-md-6 col-sm-6"></div>
 							<div class="col-md-6 col-sm-6">
-								<input name="submit" type="submit" class="form-control" value="REGISTER">
+								<input name="register" type="submit" class="form-control" value="REGISTER">
 							</div>
 						</form>
 					</div>
@@ -156,7 +156,7 @@ http://www.tooplate.com/view/2080-minimax
 								<input name="depositCheckImage" type="file" class="form-control" id="depositCheckImage" placeholder="Image">
 							</div>
 							<div class="col-md-12 col-sm-12">
-								<input name="submit" type="submit" class="form-control" value="DEPOSIT">
+								<input name="deposit" type="submit" class="form-control" value="DEPOSIT">
 							</div>
 						</form>
 					</div>
@@ -176,7 +176,7 @@ http://www.tooplate.com/view/2080-minimax
 								<input name="transferAmount" type="text" class="form-control" id="transferAmount" placeholder="Amount">
 			    	  	  	</div>
 							<div class="col-md-12 col-sm-12">
-								<input name="submit" type="submit" class="form-control" value="TRANSFER">
+								<input name="transfer" type="submit" class="form-control" value="TRANSFER">
 							</div>
 						</form>
 					</div>
@@ -191,7 +191,7 @@ http://www.tooplate.com/view/2080-minimax
 								<input name="checkLookupNumber" type="text" class="form-control" id="checkLookupNumber" placeholder="Check Number">
 						  	</div>
 							<div class="col-md-12 col-sm-12">
-								<input name="submit" type="submit" class="form-control" value="LOOKUP">
+								<input name="lookup" type="submit" class="form-control" value="LOOKUP">
 							</div>
 						</form>
 					</div>

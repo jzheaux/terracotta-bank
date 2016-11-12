@@ -21,8 +21,8 @@ import com.joshcummings.codeplay.terracotta.service.UserService;
 public class RegisterServlet extends ApplicationAwareServlet {
 	private static final long serialVersionUID = 1L;
 
-	private Long nextUserNumber = 1L;
-	private Long nextAccountNumber = 1L;
+	private Long nextUserNumber = 4L;
+	private Long nextAccountNumber = 4L;
 	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
