@@ -77,7 +77,7 @@ var submitCheckLookup = function(event) {
 		success : function ( result ) {
 			$("#lookup :not([type~=submit]).form-control").val("");
 			var arrayBufferView = new Uint8Array( result )
-			var blob = new Blob([ arrayBufferView ], {type: "image/jpg"});
+			var blob = new Blob([ arrayBufferView ]);//, {type: "image/jpg"});
 			var urlCreator = window.URL || window.webkitURL;
 			var url = urlCreator.createObjectURL(blob);
 			$("#deposit .messages").html("");
@@ -103,7 +103,7 @@ var submitMoneyTransfer = function(event) {
 		data : formData,
 		cache : false,
 		success : function ( response ) {
-			$("#accountBalance").html(response.amount);
+			$("#accountBalance-" + response.number).html(response.amount);
 			$("#transfer :not([type~=submit]).form-control").val("");
 			$("#transfer .messages").html("Transferred!");
 		},
@@ -128,7 +128,7 @@ var submitMoneyDeposit = function(event) {
 		contentType : false,
 		processData : false,
 		success : function ( response ) {
-			$("#accountBalance").html(response.amount);
+			$("#accountBalance-" + response.number).html(response.amount);
 			$("#deposit :not([type~=submit]).form-control").val("");
 			$("#deposit .messages").html("Deposited!");
 		},

@@ -27,9 +27,7 @@ public class EmployeeLoginServlet extends ApplicationAwareServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		User user = context.get(UserService.class).findByUsernameAndPassword(username, password);
-		Account account = context.get(AccountService.class).findByUserId(user.getId());
 		request.getSession().setAttribute("authenticatedUser", user);
-		request.getSession().setAttribute("authenticatedAccount", account);
 		
 		String relay = request.getParameter("relay");
 		if ( relay == null || relay.isEmpty() ) {

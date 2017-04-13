@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +27,6 @@ http://www.tooplate.com/view/2080-minimax
 	<link rel="stylesheet" href="css/style.css">
 	<!-- google web font css -->
 	<link href='http://fonts.googleapis.com/css?family=Raleway:400,300,600,700' rel='stylesheet' type='text/css'>
-
 </head>
 <body data-page-context="${pageContext.request.contextPath}" data-spy="scroll" data-target=".navbar-collapse">
 	
@@ -89,6 +88,7 @@ http://www.tooplate.com/view/2080-minimax
 						<h3>Login</h3>
 						<p>Enter your virtual terracotta vault</p>
 						<form action="${pageContext.request.contextPath}/login" method="post" role="form">
+							<div class="col-md-12 col-sm-12 messages">${loginErrorMessage}</div>
 							<div class="col-md-12 col-sm-12">
 								<input name="username" type="text" class="form-control" id="username" placeholder="Username">
 						  	</div>
@@ -135,7 +135,12 @@ http://www.tooplate.com/view/2080-minimax
 			<div class="container">
 				<div class="row">
 					<div class="col-md-12 col-sm-12">
-						<h2>Welcome, ${authenticatedUser.name}! Your Account (#<span id="accountNumber">${authenticatedAccount.number}</span>) current has $<span id="accountBalance">${authenticatedAccount.amount}</span>.</h2>
+						<h2>Welcome, ${authenticatedUser.name}!</h2>
+						
+						<c:forEach var="account" items="${authenticatedAccounts}">
+							<h3 class="col-md-12 col-sm-12">Your Account (#<span id="accountNumber-${account.number}">${account.number}</span>) currently has $<span id="accountBalance-${account.number}">${account.amount}</span>.</h3>
+						</c:forEach>
+						
 					</div>
 					<div class="col-md-4 col-sm-4">
 						<i class="fa fa-cubes"></i>
@@ -224,16 +229,20 @@ http://www.tooplate.com/view/2080-minimax
 				<div class="col-md-10 col-sm-10">
 					<div class="col-md-12 col-sm-12 messages"></div>
 					<div class="col-md-6 col-sm-6">
-						<input name="contactName" type="text" class="form-control" id="contactName" placeholder="Name">
+						<input name="contactName" type="text"
+							class="form-control" id="contactName" placeholder="Name">
 				  	</div>
 					<div class="col-md-6 col-sm-6">
-						<input name="contactEmail" type="email" class="form-control" id="contactEmail" placeholder="Email">
+						<input name="contactEmail" type="email"
+							class="form-control" id="contactEmail" placeholder="Email">
 				  	</div>
                     <div class="col-md-12 col-sm-12">
-						<input name="contactSubject" type="text" class="form-control" id="contactSubject" placeholder="Subject">
+						<input name="contactSubject" type="text"
+							class="form-control" id="contactSubject" placeholder="Subject">
 	    	  	  	</div>
 					<div class="col-md-12 col-sm-12">
-						<textarea name="contactMessage" rows="5" class="form-control" id="contactMessage" placeholder="Message"></textarea>
+						<textarea name="contactMessage" rows="5"
+							class="form-control" id="contactMessage" placeholder="Message"></textarea>
 					</div>
 					<div class="col-md-8 col-sm-8">
 						<p>Questions, comments? We will send a response within 24 hours.</p>
@@ -525,7 +534,9 @@ http://www.tooplate.com/view/2080-minimax
 
 
 <!-- javascript js -->	
-<script src="js/jquery.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.js"
+			  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+			  crossorigin="anonymous"></script>
 <script src="js/bootstrap.min.js"></script>	
 <script src="js/nivo-lightbox.min.js"></script>
 <script src="js/smoothscroll.js"></script>

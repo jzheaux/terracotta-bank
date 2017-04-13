@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 
 public class Check {
 	private final String id;
-	private final Integer number;
+	private final String number;
 	private final BigDecimal amount;
 	private final String accountId;
 	
-	public Check(String id, Integer number, BigDecimal amount, String accountId) {
+	public Check(String id, String number, BigDecimal amount, String accountId) {
 		this.id = id;
 		this.number = number;
 		this.amount = amount;
@@ -19,7 +19,7 @@ public class Check {
 		return id;
 	}
 
-	public Integer getNumber() {
+	public String getNumber() {
 		return number;
 	}
 

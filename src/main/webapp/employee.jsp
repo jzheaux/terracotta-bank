@@ -83,7 +83,7 @@ http://www.tooplate.com/view/2080-minimax
 						  	</div>
 							<div class="col-md-6 col-sm-6"></div>
 							<div class="col-md-6 col-sm-6">
-								<input name="submit" type="submit" class="form-control" value="LOGIN">
+								<input name="login" type="submit" class="form-control" value="LOGIN">
 							</div>
 						</form>
 					</div>
@@ -118,7 +118,7 @@ http://www.tooplate.com/view/2080-minimax
 						<form id="showMessages" action="#" method="post" role="form">
 							<div class="col-md-12 col-sm-12 messages"></div>
 							<div class="col-md-12 col-sm-12">
-								<input name="submit" type="submit" class="form-control" value="SHOW">
+								<input name="show" type="submit" class="form-control" value="SHOW">
 							</div>
 						</form>
 					</div>
@@ -435,7 +435,9 @@ http://www.tooplate.com/view/2080-minimax
 
 
 <!-- javascript js -->	
-<script src="js/jquery.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.js"
+			  integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+			  crossorigin="anonymous"></script>
 <script src="js/bootstrap.min.js"></script>	
 <script src="js/nivo-lightbox.min.js"></script>
 <script src="js/smoothscroll.js"></script>

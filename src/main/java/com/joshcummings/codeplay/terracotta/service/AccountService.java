@@ -7,6 +7,7 @@ import java.util.Set;
 import com.joshcummings.codeplay.terracotta.model.Account;
 import com.joshcummings.codeplay.terracotta.model.Check;
 import com.joshcummings.codeplay.terracotta.model.Message;
+import com.joshcummings.codeplay.terracotta.model.User;
 
 public class AccountService extends ServiceSupport {
 	public Account findById(String id) {
@@ -21,8 +22,8 @@ public class AccountService extends ServiceSupport {
 		return accounts.size() > 0 ? accounts.iterator().next() : null;
 	}
 	
-	public Account findByUserId(String id) {
-		Set<Account> accounts = runQuery("SELECT * FROM account WHERE owner_id = " + id, (rs) -> {
+	public Set<Account> findByUsername(String username) {
+		Set<Account> accounts = runQuery("SELECT account.* FROM account, user WHERE user.username = '" + username + "' AND account.owner_id = user.id", (rs) -> {
 			try {
 				return new Account(rs.getString(1), new BigDecimal(rs.getString(2)), 
 						rs.getLong(3), rs.getString(4));
@@ -30,7 +31,7 @@ public class AccountService extends ServiceSupport {
 				throw new IllegalStateException(e);
 			}
 		});
-		return accounts.size() > 0 ? accounts.iterator().next() : null;
+		return accounts;
 	}
 	
 	public Account findByAccountNumber(Integer accountNumber) {
@@ -54,6 +55,19 @@ public class AccountService extends ServiceSupport {
 				throw new IllegalStateException(e);
 			}
 		});
+	}
+	
+	public Account findDefaultAccountForUser(User user) {
+		Set<Account> accounts = runQuery("SELECT * FROM account WHERE owner_id = '" + user.getId() + "'", (rs) -> {
+			try {
+				return new Account(rs.getString(1), new BigDecimal(rs.getString(2)), 
+						rs.getLong(3), rs.getString(4));
+			} catch ( SQLException e ) {
+				throw new IllegalStateException(e);
+			}
+		});
+		
+		return accounts.size() > 0 ? accounts.iterator().next() : null;		
 	}
 	
 	public void addAccount(Account account) {

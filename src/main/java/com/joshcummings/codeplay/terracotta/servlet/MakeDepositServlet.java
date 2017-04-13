@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
+import org.apache.tika.Tika;
 
 import com.joshcummings.codeplay.terracotta.model.Account;
 import com.joshcummings.codeplay.terracotta.model.Check;
@@ -36,6 +39,7 @@ public class MakeDepositServlet extends ApplicationAwareServlet {
 	
 	private Integer nextCheckNumber = 1;
 
+	private static final Pattern CHECK_NUMBER_PATTERN = Pattern.compile("[A-Fa-f0-9]+");
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -44,15 +48,26 @@ public class MakeDepositServlet extends ApplicationAwareServlet {
 		
 		Optional<Integer> accountNumber = tryParse(request.getParameter("depositAccountNumber"), Integer::parseInt, errors);
 		Optional<BigDecimal> amount = tryParse(request.getParameter("depositAmount"), BigDecimal::new, errors);
-
-		if ( errors.isEmpty() ) {
-			String checkNumber = request.getParameter("depositCheckNumber");
-			
+		Optional<String> checkNumber = tryParse(request.getParameter("depositCheckNumber"), (number) -> {
+			/*number = ESAPI.encoder().canonicalize(number);
+			if ( CHECK_NUMBER_PATTERN.matcher(number).matches() ) {
+				return number;
+			} else {
+				throw new IllegalArgumentException("Check numbers should be hexadecimal");
+			}*/
+			return number;
+		}, errors);
+				
+		if ( errors.isEmpty() ) {			
 			Part image = request.getPart("depositCheckImage");
+
+			Tika tika = new Tika();
+			String result = tika.detect(image.getInputStream());
+
 			Account account = context.get(AccountService.class).findByAccountNumber(accountNumber.get());
-			context.get(CheckService.class).updateCheckImage(checkNumber, image.getInputStream());
+			context.get(CheckService.class).updateCheckImage(checkNumber.get(), image.getInputStream());
 			
-			Check check = new Check(String.valueOf(nextCheckNumber++), Integer.parseInt(checkNumber), amount.get(), account.getId());
+			Check check = new Check(String.valueOf(nextCheckNumber++), checkNumber.get(), amount.get(), account.getId());
 			context.get(CheckService.class).addCheck(check);
 			
 			account = context.get(AccountService.class).makeDeposit(account, check);

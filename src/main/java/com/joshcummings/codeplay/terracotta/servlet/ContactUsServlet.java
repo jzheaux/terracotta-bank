@@ -18,7 +18,7 @@ import com.joshcummings.codeplay.terracotta.service.MessageService;
 public class ContactUsServlet extends ApplicationAwareServlet {
 	private static final long serialVersionUID = 1L;
 
-	private Long nextMessageId = 1L;
+	private Long nextMessageId = 2L;
 	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)

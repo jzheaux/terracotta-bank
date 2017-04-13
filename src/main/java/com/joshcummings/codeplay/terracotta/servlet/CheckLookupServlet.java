@@ -35,5 +35,10 @@ public class CheckLookupServlet extends ApplicationAwareServlet {
 			request.getRequestDispatcher("/WEB-INF/json/error.jsp").forward(request, response);
 		}
 	}
+	
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
+	}
 
 }

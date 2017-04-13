@@ -1,6 +1,7 @@
 package com.joshcummings.codeplay.terracotta.servlet;
 
 import java.io.IOException;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,10 +28,19 @@ public class LoginServlet extends ApplicationAwareServlet {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
 		User user = context.get(UserService.class).findByUsernameAndPassword(username, password);
-		Account account = context.get(AccountService.class).findByUserId(user.getId());
-		request.getSession().setAttribute("authenticatedUser", user);
-		request.getSession().setAttribute("authenticatedAccount", account);
-		response.sendRedirect(request.getContextPath());
+		if ( user == null ) {
+			request.setAttribute("loginErrorMessage", "Either the username you provided (" + username + ") or the password is incorrect.");
+			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
+		} else {
+			Set<Account> accounts = context.get(AccountService.class).findByUsername(user.getUsername());
+			request.getSession().setAttribute("authenticatedUser", user);
+			request.getSession().setAttribute("authenticatedAccounts", accounts);
+			response.sendRedirect(request.getContextPath());
+		}
+	}
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doPost(request, response);
 	}
 
 }

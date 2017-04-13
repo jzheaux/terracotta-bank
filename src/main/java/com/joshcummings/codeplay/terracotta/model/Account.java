@@ -1,8 +1,11 @@
 package com.joshcummings.codeplay.terracotta.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Account {
+public class Account implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private final String id;
 	private final BigDecimal amount;
 	private final Long number;
