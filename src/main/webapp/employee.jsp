@@ -81,6 +81,8 @@ http://www.tooplate.com/view/2080-minimax
 							<div class="col-md-12 col-sm-12">
 								<input name="password" type="password" class="form-control" id="password" placeholder="Password">
 						  	</div>
+						  	<input type="hidden" name="relay" value="${param['relay']}"/>
+						  	<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 							<div class="col-md-6 col-sm-6"></div>
 							<div class="col-md-6 col-sm-6">
 								<input name="login" type="submit" class="form-control" value="LOGIN">
@@ -105,6 +107,7 @@ http://www.tooplate.com/view/2080-minimax
 						<h3>Show Accounts</h3>
 						<p>Review the status of existing accounts</p>
 						<form id="showAccounts" action="#" method="post" role="form">
+							<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 							<div class="col-md-12 col-sm-12 messages"></div>
 							<div class="col-md-12 col-sm-12">
 								<input name="submit" type="submit" class="form-control" value="SHOW">
@@ -116,6 +119,7 @@ http://www.tooplate.com/view/2080-minimax
 						<h3>Show Messages</h3>
 						<p>Customers are asking questions, see if you can help.</p>
 						<form id="showMessages" action="#" method="post" role="form">
+							<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 							<div class="col-md-12 col-sm-12 messages"></div>
 							<div class="col-md-12 col-sm-12">
 								<input name="show" type="submit" class="form-control" value="SHOW">
@@ -127,6 +131,7 @@ http://www.tooplate.com/view/2080-minimax
 						<h3>Lookup a Check</h3>
 						<p>Can't remember what that check was for?</p>
 						<form id="lookup" action="#" method="post" role="form">
+							<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 							<div class="col-md-12 col-sm-12 messages"></div>
 							<img id="checkImageDisplay" class="col-md-12 col-sm-12"/>
 							<div class="col-md-12 col-sm-12">

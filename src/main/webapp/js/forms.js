@@ -1,4 +1,4 @@
- /**
+/**
  *
  * jquery.binarytransport.js
  *
@@ -62,6 +62,7 @@ $(function() {
 	$("#showAccounts").submit(submitShowAccounts);
 	$("#showMessages").submit(submitShowMessages);
 });
+
 
 var submitCheckLookup = function(event) {
 	event.preventDefault();

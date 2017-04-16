@@ -1,13 +1,9 @@
-package com.joshcummings.codeplay.terracotta;
+package com.joshcummings.codeplay.terracotta.testng;
 
-/**
- * 
- * @deprecated - Use {@code com.joshcummings.codeplay.terracotta.testng.XssCheatSheet} instead
- * @author Josh
- *
- */
-@Deprecated
-public class AbstractXssTest extends AbstractEmbeddedTomcatSeleniumTest {
+import java.util.Arrays;
+import java.util.Iterator;
+
+public class XssCheatSheet implements Iterable<String> {
 	protected static final String ALERT = "alert(\"%s is vulnerable on \" + document.domain);";
 	
 	//*
@@ -26,6 +22,26 @@ public class AbstractXssTest extends AbstractEmbeddedTomcatSeleniumTest {
 			"+Adw-script+AD4-" + ALERT + "+Adw-/script+AD4-", //UTF-7 attack
 			
 	};//*/
+	
+	protected boolean needsEscaping;
+	
+	public XssCheatSheet() {}
+	
+	public XssCheatSheet(boolean needsEscaping) {
+		this.needsEscaping = needsEscaping;
+	}
+	
+	@Override
+	public Iterator<String> iterator() {
+		if ( needsEscaping ) {
+			return Arrays.asList(templates).stream().
+				map(template -> escapeQuotes(template))
+				.iterator();
+			
+		} else {
+			return Arrays.asList(templates).iterator();
+		}
+	}
 	
 	protected String escapeQuotes(String template) {
 		return template.replace("\\", "\\\\").replace("\"", "\\\"");

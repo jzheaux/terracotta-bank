@@ -28,7 +28,7 @@ http://www.tooplate.com/view/2080-minimax
 	<!-- google web font css -->
 	<link href='http://fonts.googleapis.com/css?family=Raleway:400,300,600,700' rel='stylesheet' type='text/css'>
 </head>
-<body data-page-context="${pageContext.request.contextPath}" data-spy="scroll" data-target=".navbar-collapse">
+<body data-page-context="${pageContext.request.contextPath}" data-spy="scroll" data-target=".navbar-collapse" data-csrf-token="${csrfToken}">
 	
 <!-- navigation -->
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -95,6 +95,8 @@ http://www.tooplate.com/view/2080-minimax
 							<div class="col-md-12 col-sm-12">
 								<input name="password" type="password" class="form-control" id="password" placeholder="Password">
 						  	</div>
+						  	<input type="hidden" name="relay" value="${param['relay']}"/>
+						  	<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 							<div class="col-md-6 col-sm-6"></div>
 							<div class="col-md-6 col-sm-6">
 								<input name="login" type="submit" class="form-control" value="LOGIN">
@@ -118,6 +120,7 @@ http://www.tooplate.com/view/2080-minimax
 						  	<div class="col-md-6 col-sm-6">
 								<input name="registerEmail" type="email" class="form-control" id="registerEmail" placeholder="Your Email">
 						  	</div>
+						  	<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 						  	<div class="col-md-6 col-sm-6"></div>
 							<div class="col-md-6 col-sm-6">
 								<input name="register" type="submit" class="form-control" value="REGISTER">
@@ -163,6 +166,7 @@ http://www.tooplate.com/view/2080-minimax
 							<div class="col-md-12 col-sm-12">
 								<input name="deposit" type="submit" class="form-control" value="DEPOSIT">
 							</div>
+							<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 						</form>
 					</div>
 					<div class="col-md-4 col-sm-4">
@@ -183,6 +187,7 @@ http://www.tooplate.com/view/2080-minimax
 							<div class="col-md-12 col-sm-12">
 								<input name="transfer" type="submit" class="form-control" value="TRANSFER">
 							</div>
+							<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 						</form>
 					</div>
 					<div class="col-md-4 col-sm-4">
@@ -198,6 +203,7 @@ http://www.tooplate.com/view/2080-minimax
 							<div class="col-md-12 col-sm-12">
 								<input name="lookup" type="submit" class="form-control" value="LOOKUP">
 							</div>
+							<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 						</form>
 					</div>
 				</div>

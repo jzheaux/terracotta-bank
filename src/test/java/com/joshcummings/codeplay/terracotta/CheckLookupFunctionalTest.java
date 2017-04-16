@@ -8,7 +8,9 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class CheckLookupFunctionalTest extends AbstractXssTest {
+import com.joshcummings.codeplay.terracotta.testng.XssCheatSheet;
+
+public class CheckLookupFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	@BeforeClass(alwaysRun=true)
 	public void doLogin() {
 		login("john.coltraine", "j0hn");
@@ -21,8 +23,7 @@ public class CheckLookupFunctionalTest extends AbstractXssTest {
 	
 	@Test(groups="web")
 	public void testCheckLookupForXSS() {		
-		for ( String template : templates ) {
-			template = escapeQuotes(template);
+		for ( String template : new XssCheatSheet(true) ) {
 			goToPage("/");
 			
 			try {

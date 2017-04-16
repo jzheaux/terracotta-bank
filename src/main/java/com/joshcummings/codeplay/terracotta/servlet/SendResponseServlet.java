@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.joshcummings.codeplay.terracotta.app.ApplicationAwareServlet;
 import com.joshcummings.codeplay.terracotta.service.EmailService;
 
 /**

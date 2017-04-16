@@ -1,44 +1,35 @@
 package com.joshcummings.codeplay.terracotta;
 
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import org.littleshoot.proxy.HostResolver;
-import org.littleshoot.proxy.HttpProxyServer;
-import org.littleshoot.proxy.impl.DefaultHttpProxyServer;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
-import com.joshcummings.codeplay.terracotta.testng.ContainerSupport;
 import com.joshcummings.codeplay.terracotta.testng.DockerSupport;
+import com.joshcummings.codeplay.terracotta.testng.HttpSupport;
+import com.joshcummings.codeplay.terracotta.testng.ProxySupport;
+import com.joshcummings.codeplay.terracotta.testng.SeleniumSupport;
+import com.joshcummings.codeplay.terracotta.testng.TestConstants;
 import com.joshcummings.codeplay.terracotta.testng.TomcatSupport;
 
-import io.github.bonigarcia.wdm.MarionetteDriverManager;
-
-public class AbstractEmbeddedTomcatSeleniumTest implements ContainerSupport {
-	protected static final String host = "honestsite.com";
-	protected static final String evilHost = "evilsite.com";
+public class AbstractEmbeddedTomcatSeleniumTest {
+	static WebDriver driver;
 	
-	protected static WebDriver driver;
-	
-	protected static HttpProxyServer proxy;
-	
-	TomcatSupport tomcat = new TomcatSupport();
-	DockerSupport docker = new DockerSupport();
+	protected SeleniumSupport selenium = new SeleniumSupport();
+	protected ProxySupport proxy = new ProxySupport();
+	protected TomcatSupport tomcat = new TomcatSupport();
+	protected DockerSupport docker = new DockerSupport();
+	protected HttpSupport http = new HttpSupport();
 	
 	@BeforeTest(alwaysRun=true)
 	public void start(ITestContext ctx) throws Exception {
@@ -46,6 +37,23 @@ public class AbstractEmbeddedTomcatSeleniumTest implements ContainerSupport {
 			docker.startContainer();
 		} else {
 			tomcat.startContainer();
+		}
+	}
+	
+	@BeforeTest(alwaysRun=true)
+	public void startSelenium() {
+		driver = selenium.start();
+	}
+	
+	@BeforeTest(alwaysRun=true)
+	public void startProxy(ITestContext ctx) {
+		proxy.start(ctx);
+	}
+	
+	@BeforeTest(groups="filesystem")
+	public void startClamav(ITestContext ctx) throws Exception {
+		if ( "docker".equals(ctx.getName()) ) {
+			docker.startClamav();
 		}
 	}
 	
@@ -58,46 +66,9 @@ public class AbstractEmbeddedTomcatSeleniumTest implements ContainerSupport {
 		}
 	}
 	
-	@BeforeTest(alwaysRun=true)
-	public void startSelenium() {
-		MarionetteDriverManager.getInstance().setup("0.15.0");
-
-		FirefoxProfile profile = new FirefoxProfile();
-
-		profile.setPreference("network.proxy.type", 1);
-        profile.setPreference("network.proxy.http", "localhost");
-        profile.setPreference("network.proxy.http_port", 8081);
-        profile.setPreference("network.proxy.ssl", "localhost");
-        profile.setPreference("network.proxy.ssl_port", 8081);        
-		
-		FirefoxOptions options = new FirefoxOptions();
-		options.setProfile(profile);
-
-		driver = new FirefoxDriver(options);
-	}
-	
-	@BeforeTest(alwaysRun=true)
-	public void startProxy(ITestContext ctx) {
-		proxy = DefaultHttpProxyServer.bootstrap()
-		        .withPort(8081)
-		        .withServerResolver(new HostResolver() {
-					@Override
-					public InetSocketAddress resolve(String host, int port) throws UnknownHostException {
-						if ( host.equals(AbstractEmbeddedTomcatSeleniumTest.host) ||
-								host.equals(AbstractEmbeddedTomcatSeleniumTest.evilHost)) {
-							return new InetSocketAddress("docker".equals(ctx.getName()) ? "192.168.99.100" : "localhost", 8080);
-						}
-						return new InetSocketAddress(host, port);
-					}
-		        })
-		        .start();
-	}
-	
 	@AfterTest(alwaysRun=true)
 	public void shutdownSelenium() {
-		if ( driver != null ) {
-			driver.quit();
-		}
+		selenium.stop(driver);
 	}
 	
 	@AfterTest(alwaysRun=true)
@@ -105,8 +76,15 @@ public class AbstractEmbeddedTomcatSeleniumTest implements ContainerSupport {
 		proxy.stop();
 	}
 	
+	@AfterTest(groups="filesystem")
+	public void stopClamav(ITestContext ctx) throws Exception {
+		if ( "docker".equals(ctx.getName()) ) {
+			docker.stopClamav();
+		}
+	}
+	
 	protected void goToPage(String page) {
-		driver.get("http://" + host + page);
+		driver.get("http://" + TestConstants.host + page);
 	}
 	
 	protected void login(String username, String password) {

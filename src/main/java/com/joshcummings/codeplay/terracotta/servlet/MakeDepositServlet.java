@@ -2,6 +2,7 @@ package com.joshcummings.codeplay.terracotta.servlet;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +18,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import org.apache.tika.Tika;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.joshcummings.codeplay.terracotta.app.ApplicationAwareServlet;
+import com.joshcummings.codeplay.terracotta.defense.fs.ImageDetector;
 import com.joshcummings.codeplay.terracotta.model.Account;
 import com.joshcummings.codeplay.terracotta.model.Check;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
@@ -28,8 +32,10 @@ import com.joshcummings.codeplay.terracotta.service.CheckService;
  * Servlet implementation class MakeDepositServlet
  */
 @WebServlet("/makeDeposit")
-@MultipartConfig
+@MultipartConfig(fileSizeThreshold=1024*1024, maxFileSize=1024*1024)
 public class MakeDepositServlet extends ApplicationAwareServlet {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	private static final long serialVersionUID = 1L;
 
 	private static final String CHECK_IMAGE_LOCATION = "images/checks";
@@ -57,13 +63,24 @@ public class MakeDepositServlet extends ApplicationAwareServlet {
 			}*/
 			return number;
 		}, errors);
-				
+
+		Part image = request.getPart("depositCheckImage");
+		
+		String name = image.getSubmittedFileName();
+		InputStream file = image.getInputStream();
+		
+		try {
+			ImageDetector detector = context.get(ImageDetector.class);
+			logger.debug("Considering whether or not {} is an image using {}", name, detector.getClass());
+			if ( !detector.isAnImage(name, file) ) {
+				logger.debug("It is NOT an image!");
+				errors.add("Provided file is not an image.");
+			}
+		} catch ( IOException e ) {
+			errors.add("Failed image upload: " + e.getMessage());
+		}
+		
 		if ( errors.isEmpty() ) {			
-			Part image = request.getPart("depositCheckImage");
-
-			Tika tika = new Tika();
-			String result = tika.detect(image.getInputStream());
-
 			Account account = context.get(AccountService.class).findByAccountNumber(accountNumber.get());
 			context.get(CheckService.class).updateCheckImage(checkNumber.get(), image.getInputStream());
 			

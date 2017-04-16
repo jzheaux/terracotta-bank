@@ -1,24 +1,25 @@
 package com.joshcummings.codeplay.terracotta;
 
-
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
-public class LoginFunctionalTest extends AbstractXssTest {
+import com.joshcummings.codeplay.terracotta.testng.TestConstants;
+import com.joshcummings.codeplay.terracotta.testng.XssCheatSheet;
+
+public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	@AfterMethod(alwaysRun=true)
 	public void doLogout() {
 		logout();
 	}
 	
-	@Test(suiteName="web")
+	@Test(groups="web")
 	public void testLoginForXss() throws InterruptedException {		
-		for ( String template : templates ) {
+		for ( String template : new XssCheatSheet() ) {
 			goToPage("/");
 			
 			try {
@@ -33,6 +34,19 @@ public class LoginFunctionalTest extends AbstractXssTest {
 				// okay!
 			}
 		}
+	}
+	
+	@Test(groups="http")
+	public void testLoginForOpenRedirect() throws InterruptedException {
+		goToPage("/?relay=http://" + TestConstants.evilHost);
+
+		driver.findElement(By.name("username")).sendKeys("admin");
+		driver.findElement(By.name("password")).sendKeys("admin");
+		driver.findElement(By.name("login")).submit();
+		
+		Thread.sleep(2000);
+		
+		Assert.assertEquals(driver.getCurrentUrl(), "http://honestsite.com/", "You got redirected to: " + driver.getCurrentUrl());
 	}
 
 	@Test(groups="data", expectedExceptions=NoSuchElementException.class)

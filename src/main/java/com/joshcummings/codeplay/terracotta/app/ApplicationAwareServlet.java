@@ -1,9 +1,7 @@
-package com.joshcummings.codeplay.terracotta.servlet;
+package com.joshcummings.codeplay.terracotta.app;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-
-import com.joshcummings.codeplay.terracotta.app.ApplicationContext;
 
 public abstract class ApplicationAwareServlet extends HttpServlet {
 	protected ApplicationContext context;

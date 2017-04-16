@@ -33,4 +33,18 @@ public class DockerSupport {
 		docker.stopContainerCmd(CONTAINER_NAME).exec();
 		docker.removeContainerCmd(CONTAINER_NAME).exec();
 	}
+	
+	public void startClamav() throws Exception {
+		CreateContainerCmd cmd = docker.createContainerCmd("mkodockx/docker-clamav");
+		cmd.withPortBindings(PortBinding.parse("3310:3310"))
+			.withNetworkMode("host")
+			.withName("clamav");
+		cmd.exec();
+		docker.startContainerCmd("clamav").exec();
+	}
+	
+	public void stopClamav() throws Exception {
+		docker.stopContainerCmd("clamav").exec();
+		docker.removeContainerCmd("clamav").exec();
+	}
 }

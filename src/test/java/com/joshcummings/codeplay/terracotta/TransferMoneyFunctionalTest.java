@@ -1,5 +1,11 @@
 package com.joshcummings.codeplay.terracotta;
 
+import java.io.IOException;
+import java.util.Arrays;
+
+import org.apache.http.Header;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.message.BasicNameValuePair;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
@@ -9,7 +15,11 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class TransferMoneyFunctionalTest extends AbstractXssTest {
+import com.joshcummings.codeplay.terracotta.testng.CrlfCheatSheet;
+import com.joshcummings.codeplay.terracotta.testng.TestConstants;
+import com.joshcummings.codeplay.terracotta.testng.XssCheatSheet;
+
+public class TransferMoneyFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	@BeforeClass(alwaysRun=true)
 	public void doLogin(ITestContext ctx) {
 		System.out.println("Logging in b4 trying to transfer money");
@@ -21,26 +31,10 @@ public class TransferMoneyFunctionalTest extends AbstractXssTest {
 		System.out.println("Logging out After trying to transfer money");
 		logout();
 	}
-
-	@Test(groups="http")
-	public void testTransferMoneyForCSRF() throws Exception {
-		goToPage("/");
-		String originalTotal = driver.findElement(By.id("accountBalance-987654321")).getText();
-		
-		driver.get("http://" + evilHost + "/evilsite/csrf.html");
-		
-		Thread.sleep(5000);
-		
-		goToPage("/");
-		String newTotal = driver.findElement(By.id("accountBalance-987654321")).getText();
-		
-		Assert.assertEquals(Double.parseDouble(originalTotal), Double.parseDouble(newTotal));
-	}
 	
 	@Test(groups="web")
 	public void testTransferMoneyForXSS() {
-		for (String template : templates) {
-			template = escapeQuotes(template);
+		for (String template : new XssCheatSheet(true)) {
 			goToPage("/");
 			
 			try {
@@ -60,4 +54,57 @@ public class TransferMoneyFunctionalTest extends AbstractXssTest {
 			}
 		}
 	}
+	
+	@Test(groups="http")
+	public void testTransferMoneyForCRLF() {
+		for ( String template : new CrlfCheatSheet() ) {
+			goToPage("/");
+			
+			try {
+				String c = String.format(template, "c");
+				String fromAccountNumber = String.format(template, "fromAccountNumber");
+				String toAccountNumber = String.format(template, "toAccountNumber");
+				String transferAmount = String.format(template, "transferAmount");
+				
+				try ( CloseableHttpResponse response = 
+					http.post("/transferMoney?c=" + c,
+						new BasicNameValuePair("c", c),
+						new BasicNameValuePair("fromAccountNumber", fromAccountNumber),
+						new BasicNameValuePair("toAccountNumber", toAccountNumber),
+						new BasicNameValuePair("transferAmount", transferAmount)) ) {
+					Header[] headers = response.getHeaders("X-Evil-Header");
+					Assert.assertTrue(headers.length == 0, Arrays.toString(headers));					
+				}
+			} catch ( IOException e ) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	@Test(groups="http")
+	public void testTransferMoneyForCSRF() throws Exception {
+		goToPage("/");
+		
+		// read what is in John's account right now
+		String originalTotal = driver.findElement(By.id("accountBalance-987654321")).getText();
+		
+		driver.get("http://" + TestConstants.evilHost + "/evilsite/csrf.html");
+		
+		// wait for the stealing script to take effect
+		Thread.sleep(5000);
+		
+		goToPage("/");
+		
+		// refresh the page and see how much John has now that the csrf script has run
+		String newTotal = driver.findElement(By.id("accountBalance-987654321")).getText();
+		
+		// if they are equal, no csrf vulnerability!
+		Assert.assertEquals(Double.parseDouble(originalTotal), Double.parseDouble(newTotal));
+	}
+	
+	
+	
+	
+	
+	
 }

@@ -7,7 +7,9 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
-public class RegisterFunctionalTest extends AbstractXssTest {
+import com.joshcummings.codeplay.terracotta.testng.XssCheatSheet;
+
+public class RegisterFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 
 	@AfterClass(alwaysRun=true)
 	public void doLogout() {
@@ -16,7 +18,7 @@ public class RegisterFunctionalTest extends AbstractXssTest {
 
 	@Test(groups="web")
 	public void testRegisterForXSS() {
-		for (String template : templates) {
+		for (String template : new XssCheatSheet()) {
 			goToPage("/");
 			
 			try {

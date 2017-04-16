@@ -11,9 +11,13 @@ public class ApplicationContext {
 	}
 	
 	public void set(Object obj) {
-		registry.put(obj.getClass(), obj);
+		put(obj.getClass(), obj);
 	}
 
+	public void put(Class<?> clazz, Object obj) {
+		registry.put(clazz, obj);
+	}
+	
 	public void clear() {
 		registry.clear();
 	}

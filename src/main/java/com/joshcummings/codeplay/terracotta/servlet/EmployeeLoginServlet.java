@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.joshcummings.codeplay.terracotta.app.ApplicationAwareServlet;
+import com.joshcummings.codeplay.terracotta.app.RedirectCache;
 import com.joshcummings.codeplay.terracotta.model.Account;
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
@@ -30,6 +32,7 @@ public class EmployeeLoginServlet extends ApplicationAwareServlet {
 		request.getSession().setAttribute("authenticatedUser", user);
 		
 		String relay = request.getParameter("relay");
+		//relay = context.get(RedirectCache.class).url(relay);
 		if ( relay == null || relay.isEmpty() ) {
 			response.sendRedirect(request.getContextPath() + "/employee.jsp");
 		} else {

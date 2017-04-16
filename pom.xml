@@ -9,7 +9,7 @@
 	<properties>
 		<tomcat.version>8.0.28</tomcat.version>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>com.fasterxml.uuid</groupId>
@@ -99,6 +99,12 @@
 			<version>1.7.21</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-parsers -->
 		<dependency>
 			<groupId>org.apache.tika</groupId>
@@ -126,11 +132,25 @@
 		</dependency>
 		<!-- end for logback -->
 
+		<dependency>
+			<groupId>fi.solita.clamav</groupId>
+			<artifactId>clamav-client</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>4.2.2.RELEASE</version>
+		</dependency>
+
 		<!-- Test Dependencies -->
 		<dependency>
 			<groupId>com.github.docker-java</groupId>
 			<artifactId>docker-java</artifactId>
 			<version>3.0.6</version>
+			<scope>test</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>com.google.guava</groupId>
@@ -169,15 +189,12 @@
 			<groupId>org.littleshoot</groupId>
 			<artifactId>littleproxy</artifactId>
 			<version>1.1.2</version>
-
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
-<!-- 		<resources>
-		  <resource>
-	        <directory>src/main/webapp</directory>
-	      </resource>
-	    </resources> -->
+		<!-- <resources> <resource> <directory>src/main/webapp</directory> </resource> 
+			</resources> -->
 		<finalName>terracotta-bank</finalName>
 		<plugins>
 			<plugin>
@@ -227,8 +244,8 @@
 					<execution>
 						<phase>package</phase>
 						<goals>
-        					<goal>build</goal>
-      					</goals>
+							<goal>build</goal>
+						</goals>
 						<configuration>
 							<imageName>${project.build.finalName}</imageName>
 							<imageTags>
