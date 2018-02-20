@@ -67,7 +67,7 @@ public class TransferMoneyFunctionalTest extends AbstractEmbeddedTomcatSeleniumT
 				String transferAmount = String.format(template, "transferAmount");
 				
 				try ( CloseableHttpResponse response = 
-					http.post("/transferMoney?c=" + c,
+					honest.post("/transferMoney?c=" + c,
 						new BasicNameValuePair("c", c),
 						new BasicNameValuePair("fromAccountNumber", fromAccountNumber),
 						new BasicNameValuePair("toAccountNumber", toAccountNumber),

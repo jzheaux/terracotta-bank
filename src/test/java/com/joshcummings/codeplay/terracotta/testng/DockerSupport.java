@@ -11,14 +11,18 @@ public class DockerSupport {
 	private static final String CONTAINER_NAME = "test-terracotta-bank";
 	
 	private DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
-		    .withDockerHost(System.getenv("DOCKER_HOST"))
-		    .withDockerTlsVerify(true)
-		    .withDockerCertPath(System.getenv("DOCKER_CERT_PATH"))
+		    .withDockerHost(getenvWithDefault("DOCKER_HOST", "tcp://127.0.0.1"))
+		    .withDockerTlsVerify(Boolean.valueOf(getenvWithDefault("DOCKER_TLS_VERIFY", "false")))
+		    .withDockerCertPath(getenvWithDefault("DOCKER_CERT_PATH", "~/.docker/machine"))
 		    .withApiVersion("1.23")
 		    .withRegistryUrl("https://index.docker.io/v1/")
 		    .build();
 	
 	private DockerClient docker = DockerClientBuilder.getInstance(config).build();
+
+	private String getenvWithDefault(String name, String def) {
+		return System.getenv(name) == null ? def : System.getenv(name);
+	}
 
 	public void startContainer() throws Exception {
 		CreateContainerCmd cmd = docker.createContainerCmd("terracotta-bank");

@@ -86,7 +86,7 @@ public class MakeDepositFunctionalTest extends AbstractEmbeddedTomcatSeleniumTes
 		String checkLookupNumber = maliciousCheckNumber;
 
 		try ( CloseableHttpResponse response =
-				http.post("/checkLookup", new BasicNameValuePair("checkLookupNumber", checkLookupNumber)) ) {
+				honest.post("/checkLookup", new BasicNameValuePair("checkLookupNumber", checkLookupNumber)) ) {
 			ByteArrayOutputStream destination = new ByteArrayOutputStream();
 			IOUtils.copy(response.getEntity().getContent(), destination);
 	

@@ -108,6 +108,7 @@ http://www.tooplate.com/view/2080-minimax
 						<h3>Register</h3>
 						<p>Not signed up yet? Get your own terrcotta vase vault! <a rel="nofollow" href="http://fortawesome.github.io/Font-Awesome/examples/" target="_parent">examples</a>.</p>
 						<form action="${pageContext.request.contextPath}/register" method="post" role="form">
+							<div class="col-md-12 col-sm-12 messages">${registrationErrorMessage}</div>
 							<div class="col-md-6 col-sm-6">
 								<input name="registerUsername" type="text" class="form-control" id="registerUsername" placeholder="Username">
 						  	</div>

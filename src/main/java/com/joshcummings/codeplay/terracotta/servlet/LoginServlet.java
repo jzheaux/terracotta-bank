@@ -1,20 +1,19 @@
 package com.joshcummings.codeplay.terracotta.servlet;
 
-import java.io.IOException;
-import java.util.Set;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.joshcummings.codeplay.terracotta.app.ApplicationAwareServlet;
 import com.joshcummings.codeplay.terracotta.defense.http.CsrfTokenRepository;
 import com.joshcummings.codeplay.terracotta.model.Account;
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * Servlet implementation class LoginServlet
@@ -29,9 +28,12 @@ public class LoginServlet extends ApplicationAwareServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		User user = context.get(UserService.class).findByUsernameAndPassword(username, password);
+		User user = context.get(UserService.class).findByUsername(username);//, password);
 		if ( user == null ) {
-			request.setAttribute("loginErrorMessage", "Either the username you provided (" + username + ") or the password is incorrect.");
+			request.setAttribute("loginErrorMessage", "The username (" + username + ") you provided is incorrect.");
+			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
+		} else if ( !password.equals(user.getPassword()) ) {
+			request.setAttribute("loginErrorMessage", "The password you provided is incorrect.");
 			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
 		} else {
 			Set<Account> accounts = context.get(AccountService.class).findByUsername(user.getUsername());
