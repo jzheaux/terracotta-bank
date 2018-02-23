@@ -182,8 +182,9 @@ var submitShowAccounts = function(event) {
 var submitShowMessages = function(event) {
 	event.preventDefault();
 	
+	var formData = $(this).serialize();
 	$.ajax({
-		url : $("body").data("page-context") + "/showMessages",
+		url : $("body").data("page-context") + "/showMessages?" + formData,
 		type : "GET",
 		cache : false,
 		success : function ( response ) {

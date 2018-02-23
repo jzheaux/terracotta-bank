@@ -53,5 +53,4 @@ public class DatabaseConfigurer implements ServletContextListener {
 			throw new IllegalStateException(e);
 		}
 	}
-
 }

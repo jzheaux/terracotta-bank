@@ -44,12 +44,23 @@ public class SpringSecurityJWTBasedCsrfTokenRepository implements CsrfTokenRepos
 	}
 	
 	@Override
+	public CsrfToken loadToken(HttpServletRequest request) {
+		// since we are effectively treating the signed parameter as our repo, we'll look it up that way here
+		String encoded = request.getParameter(DEFAULT_CSRF_HEADER_NAME);
+		if ( encoded == null ) {
+			encoded = request.getHeader(DEFAULT_CSRF_PARAMETER_NAME);
+		}
+		
+		return encoded == null || failsVerification(encoded) ?
+			null : new DefaultCsrfToken
+					(DEFAULT_CSRF_HEADER_NAME, DEFAULT_CSRF_PARAMETER_NAME, encoded);
+	}
+	
+	@Override
 	public CsrfToken generateToken(HttpServletRequest request) {
-		String nonce = new BigInteger(130, rnd).toString(32);
-		
 		String subject = resolveSubject();
-		
 		Date expiry = LocalDateTime.now().plusMinutes(30).toDate();
+		String nonce = new BigInteger(130, rnd).toString(32);
 		
 		try {
 			String encoded = JWT.create()
@@ -67,21 +78,6 @@ public class SpringSecurityJWTBasedCsrfTokenRepository implements CsrfTokenRepos
 	@Override
 	public void saveToken(CsrfToken token, HttpServletRequest request, HttpServletResponse response) {
 		// nothing to do
-	}
-
-	@Override
-	public CsrfToken loadToken(HttpServletRequest request) {
-		// since we are effectively treating the signed parameter as our repo, we'll look it up that way here
-		String encoded = request.getParameter(DEFAULT_CSRF_PARAMETER_NAME);
-		if ( encoded == null ) {
-			encoded = request.getHeader(DEFAULT_CSRF_HEADER_NAME);
-		}
-		
-		if ( encoded == null || failsVerification(encoded) ) {
-			return null;
-		}
-
-		return new DefaultCsrfToken(DEFAULT_CSRF_HEADER_NAME, DEFAULT_CSRF_PARAMETER_NAME, encoded);
 	}
 
 	protected boolean failsVerification(String encoded) {

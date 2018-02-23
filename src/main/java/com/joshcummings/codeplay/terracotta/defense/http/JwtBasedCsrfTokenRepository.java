@@ -15,7 +15,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.joshcummings.codeplay.terracotta.model.User;
+import com.joshcummings.codeplay.terracotta.app.model.User;
 
 public class JwtBasedCsrfTokenRepository implements CsrfTokenRepository {
 	static final String DEFAULT_CSRF_PARAMETER_NAME = "csrfToken";
@@ -44,12 +44,8 @@ public class JwtBasedCsrfTokenRepository implements CsrfTokenRepository {
 		// since we are effectively treating the signed parameter as our repo, we'll look it up that way here
 		String encoded = request.getParameter(DEFAULT_CSRF_PARAMETER_NAME);
 		
-		if ( encoded == null || failsVerification(encoded, request) ) {
-			return null;
-		}
-
-		return encoded;
-
+		return encoded == null || failsVerification(encoded, request) ?
+			null : encoded;
 	}
 	
 	protected boolean failsVerification(String encoded, HttpServletRequest request) {
@@ -57,16 +53,19 @@ public class JwtBasedCsrfTokenRepository implements CsrfTokenRepository {
 		if (jwt.getExpiresAt().after(new Date())) {
 			String subject = resolveSubject(request);
 			if (jwt.getSubject().equals(subject)) {
-				// we could take an additional test and verify the nonce,
-				// giving this approach revocability
+				// we could take an additional test and verify the nonce, giving this approach revocability
 				// String nonce = jwt.getClaim("nonce").asString();
-
 				return false;
 			}
 		}
 		return true;
 	}
-
+	
+	protected String resolveSubject(HttpServletRequest request) {
+		User user = (User) request.getSession().getAttribute("authenticatedUser");
+		return user == null ? "prelogin" : user.getUsername();
+	}
+	
 	@Override
 	public String makeToken(HttpServletRequest request) {
 		String nonce = new BigInteger(130, rnd).toString(32);
@@ -92,10 +91,6 @@ public class JwtBasedCsrfTokenRepository implements CsrfTokenRepository {
 	public void storeToken(String token, HttpServletRequest request, HttpServletResponse response) {
 		// nothing to do
 	}
-	
-	protected String resolveSubject(HttpServletRequest request) {
-		User user = (User) request.getSession().getAttribute("authenticatedUser");
-		return user == null ? "prelogin" : user.getUsername();
-	}
+
 
 }

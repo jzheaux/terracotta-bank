@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.joshcummings.codeplay.terracotta.app.ApplicationAwareFilter;
 
-@WebFilter("/*")
+//@WebFilter("/*")
 public class TokenBasedCsrfDetectionFilter extends ApplicationAwareFilter implements CsrfDetectionFilter {
 	protected CsrfTokenRepository repository;
 	

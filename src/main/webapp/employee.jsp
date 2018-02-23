@@ -121,6 +121,8 @@ http://www.tooplate.com/view/2080-minimax
 						<form id="showMessages" action="#" method="post" role="form">
 							<input type="hidden" name="csrfToken" value="${csrfToken}"/>
 							<div class="col-md-12 col-sm-12 messages"></div>
+							<input type="text" class="form-control" id="q" name="q" placeholder="Search"/>
+							<div class="col-md-12 col-sm-12 messages"></div>
 							<div class="col-md-12 col-sm-12">
 								<input name="show" type="submit" class="form-control" value="SHOW">
 							</div>

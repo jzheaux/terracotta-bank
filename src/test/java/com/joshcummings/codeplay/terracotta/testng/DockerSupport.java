@@ -38,13 +38,28 @@ public class DockerSupport {
 		CreateContainerCmd cmd = docker.createContainerCmd("mkodockx/docker-clamav");
 		cmd.withPortBindings(PortBinding.parse("3310:3310"))
 			.withNetworkMode("host")
-			.withName("clamav");
+			.withName("test-clamav");
 		cmd.exec();
-		docker.startContainerCmd("clamav").exec();
+		docker.startContainerCmd("test-clamav").exec();
 	}
 	
 	public void stopClamav() throws Exception {
-		docker.stopContainerCmd("clamav").exec();
-		docker.removeContainerCmd("clamav").exec();
+		docker.stopContainerCmd("test-clamav").exec();
+		docker.removeContainerCmd("test-clamav").exec();
+	}
+	
+	public void startElasticsearch() throws Exception {
+		CreateContainerCmd cmd = docker.createContainerCmd("docker.elastic.co/elasticsearch/elasticsearch:5.3.1");
+		cmd.withPortBindings(PortBinding.parse("9200:9200"), PortBinding.parse("9300:9300"))
+			.withNetworkMode("host")
+			.withEnv("http.host=0.0.0.0", "script.engine.groovy.inline=true", "cluster.name=terracotta-search")
+			.withName("test-elasticsearch");
+		cmd.exec();
+		docker.startContainerCmd("test-elasticsearch").exec();
+	}
+	
+	public void stopElasticsearch() throws Exception {
+		docker.stopContainerCmd("test-elasticsearch").exec();
+		docker.removeContainerCmd("test-elasticsearch").exec();
 	}
 }

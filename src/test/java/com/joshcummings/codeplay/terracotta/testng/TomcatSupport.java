@@ -2,7 +2,7 @@ package com.joshcummings.codeplay.terracotta.testng;
 
 import org.apache.catalina.startup.Tomcat;
 
-import com.joshcummings.codeplay.terracotta.TomcatBootstrapper;
+import com.joshcummings.codeplay.terracotta.run.TomcatBootstrapper;
 
 public class TomcatSupport {
 	private static Tomcat tomcat;

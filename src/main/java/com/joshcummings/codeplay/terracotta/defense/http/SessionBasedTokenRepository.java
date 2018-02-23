@@ -11,8 +11,7 @@ public class SessionBasedTokenRepository implements CsrfTokenRepository {
 	
 	@Override
 	public String loadToken(HttpServletRequest request) {
-		return (String)request
-				.getSession().getAttribute("csrfToken");
+		return (String)request.getSession().getAttribute("csrfToken");
 	}
 
 	@Override

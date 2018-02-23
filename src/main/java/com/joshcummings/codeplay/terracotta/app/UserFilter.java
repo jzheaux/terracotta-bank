@@ -12,9 +12,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
-import com.joshcummings.codeplay.terracotta.model.Account;
-import com.joshcummings.codeplay.terracotta.model.User;
-import com.joshcummings.codeplay.terracotta.service.AccountService;
+import com.joshcummings.codeplay.terracotta.app.model.Account;
+import com.joshcummings.codeplay.terracotta.app.model.User;
+import com.joshcummings.codeplay.terracotta.app.service.AccountService;
 
 @WebFilter("/*")
 public class UserFilter implements Filter {

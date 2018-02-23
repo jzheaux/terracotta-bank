@@ -8,9 +8,9 @@ CREATE TABLE account (id VARCHAR(64) PRIMARY KEY, amount NUMERIC(12,4), number I
 CREATE TABLE check (id VARCHAR(64) PRIMARY KEY, amount NUMERIC(12,4), number VARCHAR(16), account_id VARCHAR(64))
 CREATE TABLE message (id VARCHAR(62) PRIMARY KEY, name VARCHAR(256), email VARCHAR(256), subject VARCHAR(128), message VARCHAR(2048))
 
-INSERT INTO user (id, name, email, username, password, is_admin) VALUES (1, 'John Coltraine', 'john@coltraine.com', 'john.coltraine', 'j0hn', false);
-INSERT INTO user (id, name, email, username, password, is_admin) VALUES (2, 'Upton Sinclair', 'upton@sinclair.com', 'upton.sinclair', 'upt0n', false);
-INSERT INTO user (id, name, email, username, password, is_admin) VALUES (3, 'Admin Admin', 'admin@terracottabank.com', 'admin', 'admin', true);
+INSERT INTO user (id, name, email, username, password, is_admin) VALUES (1, 'Admin Admin', 'admin@terracottabank.com', 'admin', 'admin', true);
+INSERT INTO user (id, name, email, username, password, is_admin) VALUES (2, 'John Coltraine', 'john@coltraine.com', 'john.coltraine', 'j0hn', false);
+INSERT INTO user (id, name, email, username, password, is_admin) VALUES (3, 'Upton Sinclair', 'upton@sinclair.com', 'upton.sinclair', 'upt0n', false);
 
 INSERT INTO account (id, amount, number, owner_id) VALUES (1, 2500, 987654321, 1);
 INSERT INTO account (id, amount, number, owner_id) VALUES (2, 25, 987654322, 2);
