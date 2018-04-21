@@ -28,9 +28,11 @@ public class EmployeeLoginServlet extends ApplicationAwareServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		User user = context.get(UserService.class).findByUsernameAndPassword(username, password);
-		request.getSession().setAttribute("authenticatedUser", user);
-		
+		User user = context.get(UserService.class).findByUsername(username);
+		if ( user.getPassword().equals(password) ) {
+			request.getSession().setAttribute("authenticatedUser", user);
+		}
+
 		String relay = request.getParameter("relay");
 		//relay = context.get(RedirectCache.class).url(relay);
 		if ( relay == null || relay.isEmpty() ) {

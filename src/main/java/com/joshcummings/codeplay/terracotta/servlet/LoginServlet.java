@@ -6,6 +6,7 @@ import com.joshcummings.codeplay.terracotta.model.Account;
 import com.joshcummings.codeplay.terracotta.model.User;
 import com.joshcummings.codeplay.terracotta.service.AccountService;
 import com.joshcummings.codeplay.terracotta.service.UserService;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,16 +29,24 @@ public class LoginServlet extends ApplicationAwareServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		User user = context.get(UserService.class).findByUsername(username);//, password);
-		if ( user == null ) {
-			request.setAttribute("loginErrorMessage", "The username (" + username + ") you provided is incorrect.");
-			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
-		} else if ( !password.equals(user.getPassword()) ) {
+
+		User user = context.get(UserService.class).findByUsername(username);
+
+		if ( user == null )
+		{
+			request.setAttribute("loginErrorMessage",
+					String.format("The username (%s) you provided is incorrect.", username));
+			goTo(request, response,"index.jsp");
+		}
+		else if ( !BCrypt.checkpw(password, user.getPassword()) )
+		{
 			request.setAttribute("loginErrorMessage", "The password you provided is incorrect.");
-			request.getRequestDispatcher(request.getContextPath() + "index.jsp").forward(request, response);
-		} else {
+			goTo(request, response, "index.jsp");
+		}
+		else
+		{
 			Set<Account> accounts = context.get(AccountService.class).findByUsername(user.getUsername());
-			
+
 			// replace any pre-login csrf tokens
 			context.get(CsrfTokenRepository.class).replaceToken(request, response);
 			
@@ -54,8 +63,15 @@ public class LoginServlet extends ApplicationAwareServlet {
 		}
 	}
 	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		doPost(request, response);
 	}
 
+	private void goTo(HttpServletRequest request, HttpServletResponse response, String page)
+			throws ServletException, IOException {
+
+		request.getRequestDispatcher(request.getContextPath() + page).forward(request, response);
+	}
 }

@@ -3,6 +3,7 @@ package com.joshcummings.codeplay.terracotta;
 import com.joshcummings.codeplay.terracotta.testng.TestConstants;
 import com.joshcummings.codeplay.terracotta.testng.XssCheatSheet;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.message.BasicNameValuePair;
 import org.openqa.selenium.Alert;
@@ -19,17 +20,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.testng.Assert.assertEquals;
 
 public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 	@AfterMethod(alwaysRun=true)
@@ -66,7 +64,7 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 		
 		Thread.sleep(2000);
 		
-		Assert.assertEquals(driver.getCurrentUrl(), "http://honestsite.com/", "You got redirected to: " + driver.getCurrentUrl());
+		assertEquals(driver.getCurrentUrl(), "http://honestsite.com/", "You got redirected to: " + driver.getCurrentUrl());
 	}
 
 	@Test(groups="data", expectedExceptions=NoSuchElementException.class)
@@ -82,8 +80,41 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 		Assert.fail("Successful login with SQLi!");
 	}
 
+	private CloseableHttpResponse attemptLogin(String username, String password) throws IOException {
+		return http.post("/login",
+					new BasicNameValuePair("username", username),
+					new BasicNameValuePair("password", password));
+	}
+
 	@Test(groups="enumeration")
-	public void testLoginForEnumeration() throws Exception {
+	public void testLoginForEnumeration() {
+		try (
+			CloseableHttpResponse registered = attemptLogin("admin","asdf" );
+			CloseableHttpResponse unregistered = attemptLogin("7spelledwithtwovees", "asdf");
+		) {
+
+			String registeredBody = IOUtils.toString(registered.getEntity().getContent(), "UTF-8");
+			String registeredStatusLine = registered.getStatusLine().toString();
+			Collection<String> registeredHeaders = Arrays.stream(registered.getAllHeaders())
+													.map(header -> header.toString())
+													.collect(Collectors.toList());
+
+			String unregisteredBody = IOUtils.toString(unregistered.getEntity().getContent(), "UTF-8");
+			String unregisteredStatusLine = unregistered.getStatusLine().toString();
+			Collection<String> unregisteredHeaders = Arrays.stream(unregistered.getAllHeaders())
+													.map(header -> header.toString())
+													.collect(Collectors.toList());
+
+			assertEquals(registeredBody, unregisteredBody);
+			assertEquals(registeredStatusLine, unregisteredStatusLine);
+			assertEquals(registeredHeaders, unregisteredHeaders);
+		} catch ( IOException e ) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	@Test(groups="enumeration", enabled=false)
+	public void attackLoginUsingEnumeration() throws Exception {
 		MultiValueMap<String, String> usernamesByResponseType = new LinkedMultiValueMap<>();
 
 		ExecutorService executors = Executors.newFixedThreadPool(32);
@@ -118,7 +149,7 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 			usernamesByResponseType.add(ret.getKey(), ret.getValue());
 		}
 
-		Assert.assertEquals(1, usernamesByResponseType.size(), "Potential enumeration vulnerability, these appear to be legit usernames " + usernamesByResponseType.get("password"));
+		assertEquals(1, usernamesByResponseType.size(), "Potential enumeration vulnerability, these appear to be legit usernames " + usernamesByResponseType.get("password"));
 	}
 
 	private Map.Entry<String, String> attemptLogin(String username) {
@@ -130,8 +161,6 @@ public class LoginFunctionalTest extends AbstractEmbeddedTomcatSeleniumTest {
 		) {
 			String str = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
 			boolean passwordFailed = str.contains("The password");
-
-			System.out.println("Attempted username (" + username + ")");
 
 			return new AbstractMap.SimpleImmutableEntry<>(passwordFailed ? "password" : "username", username);
 		} catch ( IOException e ) {
